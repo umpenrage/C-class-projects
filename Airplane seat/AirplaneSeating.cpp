@@ -319,7 +319,11 @@ void AirPlane::sortNames(std::vector<std::string> &names, std::vector<std::vecto
 		for (startScan = 0; startScan < (size - 1); startScan++) {
 			minIndex = startScan;
 			std::string minValue = names[startScan];
-			seatValue0 = seat[startScan][0];
+			seatValue0 = seat[startScan][0];//the seatValue1 & 2 are initialized to the index of startScan so that way
+                                            //if there is no required change the seating arrangement is not accidently changed.
+                                            //originally these were not initialized with startScan index, and when the program came
+                                            //across a comparison that did not require a change in the order, the old values for seat1 & 2
+                                            //were used and that caused the seat values to be overwritten with incorrect values.
 			seatValue1 = seat[startScan][1];
 			for (int index = startScan + 1; index < size; index++) {
 
