@@ -27,7 +27,7 @@ public:
 	bool validColumnInput(char columnInput);
 	bool validRowInput(int rowInput);
 	int convertSeatLetter(char columnInput);
-	void approveSeat(char array1[][12],int columnInput, int rowInput, int size, int& passenger);
+	int approveSeat(char array1[][12],int columnInput, int rowInput, int size, int& passenger);
 	void displayBooking(char array1[][12], int size);
 	void cancelSeat(char array1[][12], int size);
 	int displayOptionMenu();

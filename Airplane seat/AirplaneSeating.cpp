@@ -11,7 +11,7 @@ void AirPlane::displayBookMenu()
 	displayBooking(array1, 12);
 	std::cout << "Please see the above diagram and select a seat(Column, Row).\nColumns A-C are First Class, D-F are Business Class, G-I is Economy +, J-L is Economy" << std::endl;
 	
-	storePassengerName(name, passenger);
+	
 	bool loop = true;
 	while (loop) {
 		std::cout << "\nColumn: ";
@@ -31,6 +31,7 @@ void AirPlane::displayBookMenu()
 	while (loop) {
 		std::cout << "\nRow :";
 		std::cin >> rowInput;
+		std::cin.ignore();
 
 		loop = !(validRowInput(rowInput));//will continue to loop until valid input is received. 
 		if (loop) {
@@ -40,10 +41,16 @@ void AirPlane::displayBookMenu()
 	}
 
 	rowInput -= 1;//Arrays begin counting at zero and it the diagram begins counting at 1. So we need to subtract 1 from the userInput
-	
-	approveSeat(array1, convertedColumn, rowInput, 12, passenger);
+	int seatTaken = approveSeat(array1, convertedColumn, rowInput, 12, passenger);
+	if(seatTaken==1) {
+		//this means that the seat is available to be booked. 
+		storePassengerName(name, passenger);
+	}
+	else {
+		//nothing is stored because same seat was selected. 
+	}
 	sorted = 0; //returns sorted to zero so that way the sorting algorithm can be used again without error. 
-	std::cin.ignore();
+
 
 }
 
@@ -166,18 +173,20 @@ int AirPlane::convertSeatLetter(char columnInput)
 }
 
 
-void AirPlane::approveSeat(char array1[][12], int columnConverted, int rowInput, int size, int& passenger)
+int  AirPlane::approveSeat(char array1[][12], int columnConverted, int rowInput, int size, int& passenger)
 {
 	if (array1[rowInput][columnConverted] == 'O') {
 		array1[rowInput][columnConverted] = 'X';
-		std::cout << "Your seat has been Booked. Enjoy your flight." << std::endl;
+		std::cout << "Your seat is available. Please enter your the valid information below:" << std::endl;
 		rowInput++;//Added in order to properly display the row inputted by user
 		storeSeatInfo(seat, rowInput, convertedColumn, passenger);
 		passenger++;
+		return 1;
 		
 	}
 	else {
 		std::cout << "Seat has been taken. Please select another seat." << std::endl;
+		return 0;
 	}
 	
 }
@@ -319,11 +328,7 @@ void AirPlane::sortNames(std::vector<std::string> &names, std::vector<std::vecto
 		for (startScan = 0; startScan < (size - 1); startScan++) {
 			minIndex = startScan;
 			std::string minValue = names[startScan];
-			seatValue0 = seat[startScan][0];//the seatValue1 & 2 are initialized to the index of startScan so that way
-                                            //if there is no required change the seating arrangement is not accidently changed.
-                                            //originally these were not initialized with startScan index, and when the program came
-                                            //across a comparison that did not require a change in the order, the old values for seat1 & 2
-                                            //were used and that caused the seat values to be overwritten with incorrect values.
+			seatValue0 = seat[startScan][0];
 			seatValue1 = seat[startScan][1];
 			for (int index = startScan + 1; index < size; index++) {
 
