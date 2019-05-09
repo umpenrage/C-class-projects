@@ -10,41 +10,42 @@ void AirPlane::displayBookMenu()
 {
 	displayBooking(array1, 12);
 	std::cout << "Please see the above diagram and select a seat(Column, Row).\nColumns A-C are First Class, D-F are Business Class, G-I is Economy +, J-L is Economy" << std::endl;
-
-		bool loop = true;
-		while (loop) {
-			std::cout << "\nColumn: ";
-			std::cin >> columnInput;
-			columnInput = toupper(columnInput);
-			loop = validColumnInput(columnInput);
-			if (loop) {
-				std::cout << "Invalid Row selection. Please select A-L.";
-			}
-			convertedColumn = convertSeatLetter(columnInput);
-			std::cin.ignore();
-
+	
+	storePassengerName(name, passenger);
+	bool loop = true;
+	while (loop) {
+		std::cout << "\nColumn: ";
+		std::cin >> columnInput;
+		columnInput = toupper(columnInput);
+		loop = validColumnInput(columnInput);
+		if (loop) {
+			std::cout << "Invalid Row selection. Please select A-L.";
 		}
-
-		loop = true;//reintialize loop for next validation
-
-		while (loop) {
-			std::cout << "\nRow :";
-			std::cin >> rowInput;
-
-			loop = !(validRowInput(rowInput));//will continue to loop until valid input is received. 
-			if (loop) {
-				std::cout << "Invalid input. Please choose 1-6";
-			}
-
-		}
-
-		rowInput -= 1;//Arrays begin counting at zero and it the diagram begins counting at 1. So we need to subtract 1 from the userInput
-		approveSeat(array1, convertedColumn, rowInput, 12);
+		convertedColumn = convertSeatLetter(columnInput);
 		std::cin.ignore();
 
+	}
+
+	loop = true;//reintialize loop for next validation
+
+	while (loop) {
+		std::cout << "\nRow :";
+		std::cin >> rowInput;
+
+		loop = !(validRowInput(rowInput));//will continue to loop until valid input is received. 
+		if (loop) {
+			std::cout << "Invalid input. Please choose 1-6";
+		}
+
+	}
+
+	rowInput -= 1;//Arrays begin counting at zero and it the diagram begins counting at 1. So we need to subtract 1 from the userInput
+	
+	approveSeat(array1, convertedColumn, rowInput, 12, passenger);
+	sorted = 0; //returns sorted to zero so that way the sorting algorithm can be used again without error. 
+	std::cin.ignore();
+
 }
-
-
 
 
 void AirPlane::drawHorRightLine() {
@@ -164,11 +165,15 @@ int AirPlane::convertSeatLetter(char columnInput)
 	}
 }
 
-void AirPlane::approveSeat(char array1[][12], int columnConverted, int rowInput, int size)
+
+void AirPlane::approveSeat(char array1[][12], int columnConverted, int rowInput, int size, int& passenger)
 {
 	if (array1[rowInput][columnConverted] == 'O') {
 		array1[rowInput][columnConverted] = 'X';
 		std::cout << "Your seat has been Booked. Enjoy your flight." << std::endl;
+		rowInput++;//Added in order to properly display the row inputted by user
+		storeSeatInfo(seat, rowInput, convertedColumn, passenger);
+		passenger++;
 		
 	}
 	else {
@@ -211,8 +216,9 @@ int AirPlane::displayOptionMenu()
 	
 	bool loop = true;
 	while (loop) {
-		std::cout << "1. Book Flight\n2. Cancel Flight\n3. Display Booked Seats\n4. Exit Program\nUser Input:";
+		std::cout << "1. Book Flight\n2. Cancel Flight\n3. Display Booked Seats\n4. Display Passenger Info\n5. Exit Program\nUser Input: ";
 		std::cin >> input;
+		std::cin.ignore();
 		loop = verifyDisplayOptionChoice(input);
 		if (loop) {
 			std::cout << "Invalid Choice.\n";
@@ -223,11 +229,122 @@ int AirPlane::displayOptionMenu()
 }
 bool AirPlane::verifyDisplayOptionChoice(int input) {
 
-	if (input < 1 || input >4) {
+	if (input < 1 || input >5) {
 		return true;
 	}
 	else {
 		return false;
 	}
 }
+
+void AirPlane::storeAllInfo(int row, int column)
+{
+	storePassengerName(name, passenger);
+	storeSeatInfo(seat, row, column, passenger);
+	
+}
+
+void AirPlane::storeSeatInfo(std::vector<std::vector<int>>& seat, int row, int column, const int& passenger)
+{
+	std::vector<int> temp;
+		temp.push_back(column);//we place column first so it is the first thing the display passenger info method displays. 
+		temp.push_back(row);
+		
+		
+		
+	seat.push_back(temp);
+}
+
+void AirPlane::storePassengerName(std::vector<std::string>& name, const int& passenger)
+{
+	std::cout << "Please input your First Name: ";
+	std::string firstName;
+	std::getline(std::cin, firstName);
+	std::cout << "Please input your Last Name: ";
+	std::string lastName;
+	std::getline(std::cin, lastName);
+	std::string combineName = firstName + " " + lastName;
+	name.push_back(combineName);
+}
+
+void AirPlane::displayPassengerInfor(std::vector<std::string>& name, std::vector<std::vector<int>>& seat, const int& passenger)
+{
+	sortNames(name, seat);
+	for (int i = 0; i < passenger; i++) {
+		std::cout <<"\n\n\nName:"<< name[i] << std::endl;
+		for (int j = 0; j < 2; j++) {
+			if (j == 0) {
+				std::cout << "Seat: " << returnColumnLetter(seat, i, j);
+			}
+			else {
+				std::cout << " " << seat[i][j] <<"\n"<< std::endl;
+			}
+			
+		}
+			
+	}
+
+}
+
+int AirPlane::getPassengerNum()
+{
+	return passenger;
+}
+
+char AirPlane::returnColumnLetter(std::vector<std::vector<int>> &seat, int row, int column)
+{
+	switch (seat[row][column]) {
+	case 0:return'A';
+	case 1:return'B';
+	case 2:return'C';
+	case 3:return'D';
+	case 4:return'E';
+	case 5:return'F';
+	case 6:return'G';
+	case 7:return'H';
+	case 8:return'I';
+	case 9:return'J';
+	case 10:return 'K';
+	case 11:return 'L';
+	
+	};
+}
+
+void AirPlane::sortNames(std::vector<std::string> &names, std::vector<std::vector<int>> &seat)
+{
+	if (sorted == 0) {
+		int startScan, minIndex, size, seatValue0, seatValue1;
+		size = names.size();
+
+		for (startScan = 0; startScan < (size - 1); startScan++) {
+			minIndex = startScan;
+			std::string minValue = names[startScan];
+			seatValue0 = seat[startScan][0];
+			seatValue1 = seat[startScan][1];
+			for (int index = startScan + 1; index < size; index++) {
+
+				if (names[index] < minValue) {
+					minValue = names[index];
+					minIndex = index;
+					seatValue0 = seat[index][0];
+					seatValue1 = seat[index][1];
+
+				}//end of if
+			}
+				names[minIndex] = names[startScan];
+				seat[minIndex][0] = seat[startScan][0];
+				seat[minIndex][1] = seat[startScan][1];
+				names[startScan] = minValue;
+				seat[startScan][0] = seatValue0;
+				seat[startScan][1] = seatValue1;
+				sorted++;//needed in order to signal to sort method that the information has already been sorted
+			//end of for
+		}
+	}
+	else {
+		std::cout << "Information has already been sorted" << std::endl;
+	}
+}
+
+
 

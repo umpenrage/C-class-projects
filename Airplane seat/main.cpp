@@ -18,10 +18,12 @@ int main() {
 			break;
 		case 3: airplane1.displayBooking(airplane1.array1, size);
 			break;
-		case 4:displayLoop = false;
+		case 4: airplane1.displayPassengerInfor(airplane1.name, airplane1.seat, airplane1.getPassengerNum());
+			break;
+		case 5:displayLoop = false;
 			break;
 		}
 
 	}
-	cin.get();
+	
 }
