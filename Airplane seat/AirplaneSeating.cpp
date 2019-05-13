@@ -41,6 +41,7 @@ void AirPlane::displayBookMenu()
 	}
 
 	rowInput -= 1;//Arrays begin counting at zero and it the diagram begins counting at 1. So we need to subtract 1 from the userInput
+
 	int seatTaken = approveSeat(array1, convertedColumn, rowInput, 12, passenger);
 	if(seatTaken==1) {
 		//this means that the seat is available to be booked. 
@@ -200,21 +201,28 @@ void AirPlane::displayBooking(char array1[][12], int size)
 
 void AirPlane::cancelSeat(char array1[][12], int size)
 {
-	bool loop = true;
-	while (loop) {
-		std::cout << "Cancel your flight(Y or N): ";
-		char input;
-		std::cin >> input;
-		if (toupper(input) == 'Y') {
-			std::cout << "WIP";
-			loop = false;
-		}
-		else if (toupper(input) == 'N') {
-			std::cout << "No changes made" << std::endl;
-			loop = false;
-		}
-		else {
-			//loop will continue until Y or N is inputted. 
+	if (passenger == 0) {
+		std::cout << "No bookings to show" << std::endl;
+	}
+	else {
+		bool loop = true;
+		while (loop) {
+			std::cout << "Cancel your flight(Y or N): ";
+			char input;
+			std::cin >> input;
+			if (toupper(input) == 'Y') {
+				int index = returnIndex(name);
+				removeEntry(index, name, seat);
+				passenger -= 1;
+				loop = false;
+			}
+			else if (toupper(input) == 'N') {
+				std::cout << "No changes made" << std::endl;
+				loop = false;
+			}
+			else {
+				//loop will continue until Y or N is inputted. 
+			}
 		}
 	}
 }
@@ -246,21 +254,12 @@ bool AirPlane::verifyDisplayOptionChoice(int input) {
 	}
 }
 
-void AirPlane::storeAllInfo(int row, int column)
-{
-	storePassengerName(name, passenger);
-	storeSeatInfo(seat, row, column, passenger);
-	
-}
-
 void AirPlane::storeSeatInfo(std::vector<std::vector<int>>& seat, int row, int column, const int& passenger)
 {
 	std::vector<int> temp;
 		temp.push_back(column);//we place column first so it is the first thing the display passenger info method displays. 
 		temp.push_back(row);
-		
-		
-		
+
 	seat.push_back(temp);
 }
 
@@ -278,19 +277,24 @@ void AirPlane::storePassengerName(std::vector<std::string>& name, const int& pas
 
 void AirPlane::displayPassengerInfor(std::vector<std::string>& name, std::vector<std::vector<int>>& seat, const int& passenger)
 {
-	sortNames(name, seat);
-	for (int i = 0; i < passenger; i++) {
-		std::cout <<"\n\n\nName:"<< name[i] << std::endl;
-		for (int j = 0; j < 2; j++) {
-			if (j == 0) {
-				std::cout << "Seat: " << returnColumnLetter(seat, i, j);
+	if (passenger == 0) {
+		std::cout << "No passenger information to display." << std::endl;
+	}
+	else {
+		sortNames(name, seat);
+		for (int i = 0; i < passenger; i++) {
+			std::cout << "\n\n\nName:" << name[i] << std::endl;
+			for (int j = 0; j < 2; j++) {
+				if (j == 0) {
+					std::cout << "Seat: " << returnColumnLetter(seat, i, j);
+				}
+				else {
+					std::cout << " " << seat[i][j] << "\n" << std::endl;
+				}
+
 			}
-			else {
-				std::cout << " " << seat[i][j] <<"\n"<< std::endl;
-			}
-			
+
 		}
-			
 	}
 
 }
@@ -298,6 +302,49 @@ void AirPlane::displayPassengerInfor(std::vector<std::string>& name, std::vector
 int AirPlane::getPassengerNum()
 {
 	return passenger;
+}
+
+int AirPlane::returnIndex(std::vector<std::string> &name)
+{
+	int index=0;
+	sortNames(name, seat);
+	std::cout << "Removing booking.\nPlease input the first name: ";
+	std::string firstName;
+	std::cin >> firstName;
+	std::string lastName;
+	std::cout << "\nPlease input the last name: ";
+	std::cin >> lastName;
+	std::string combineNames = firstName + " " + lastName;
+	for (int i = 0; i < name.size(); i++) {
+		if (combineNames == name[i]) {
+			index = i;
+			i = name.size() + 1;//stops the loop because the value has been found
+		}
+	}
+
+	return index;
+}
+
+void AirPlane::returnSeatsIndex(int index, int &column, int &row,std::vector<std::vector<int>>& seat)
+{
+	column = seat[index][0];
+	row = seat[index][1];
+}
+
+void AirPlane::removeEntry(int index, std::vector<std::string>& name, std::vector<std::vector<int>> &seat)
+{
+	name.erase(name.begin() + index);
+	int row = 0;
+	int column = 0;
+	returnSeatsIndex(index, column, row, seat);
+	changeToO(array1, column, row);
+	seat[index].erase(seat[index].begin());//removes the column and row input
+	seat.erase(seat.begin());//removes the seat information
+}
+
+void AirPlane::changeToO(char array1[][12], int columnIndex, int rowIndex)
+{
+	array1[rowIndex - 1][columnIndex] = 'O';//Row input is stored using 1-6 due to how the information is displayed for the user. In order to change the value that corresponds to the user input we must subtract 1 because arrays always begin with 0 instead of 1. 
 }
 
 char AirPlane::returnColumnLetter(std::vector<std::vector<int>> &seat, int row, int column)
@@ -321,25 +368,29 @@ char AirPlane::returnColumnLetter(std::vector<std::vector<int>> &seat, int row, 
 
 void AirPlane::sortNames(std::vector<std::string> &names, std::vector<std::vector<int>> &seat)
 {
-	if (sorted == 0) {
-		int startScan, minIndex, size, seatValue0, seatValue1;
-		size = names.size();
+	if (passenger == 0){
+		std::cout << "No bookings to sort." << std::endl;
+	}
+	else {
+		if (sorted == 0){
+			int startScan, minIndex, size, seatValue0, seatValue1;
+			size = names.size();
 
-		for (startScan = 0; startScan < (size - 1); startScan++) {
-			minIndex = startScan;
-			std::string minValue = names[startScan];
-			seatValue0 = seat[startScan][0];
-			seatValue1 = seat[startScan][1];
-			for (int index = startScan + 1; index < size; index++) {
+			for (startScan = 0; startScan < (size - 1); startScan++) {
+				minIndex = startScan;
+				std::string minValue = names[startScan];
+				seatValue0 = seat[startScan][0];
+				seatValue1 = seat[startScan][1];
+				for (int index = startScan + 1; index < size; index++) {
 
-				if (names[index] < minValue) {
-					minValue = names[index];
-					minIndex = index;
-					seatValue0 = seat[index][0];
-					seatValue1 = seat[index][1];
+					if (names[index] < minValue) {
+						minValue = names[index];
+						minIndex = index;
+						seatValue0 = seat[index][0];
+						seatValue1 = seat[index][1];
 
-				}//end of if
-			}
+					}//end of if
+				}
 				names[minIndex] = names[startScan];
 				seat[minIndex][0] = seat[startScan][0];
 				seat[minIndex][1] = seat[startScan][1];
@@ -348,12 +399,10 @@ void AirPlane::sortNames(std::vector<std::string> &names, std::vector<std::vecto
 				seat[startScan][1] = seatValue1;
 				sorted++;//needed in order to signal to sort method that the information has already been sorted
 			//end of for
+			}
+		}
+		else {
+			std::cout << "Information has already been sorted" << std::endl;
 		}
 	}
-	else {
-		std::cout << "Information has already been sorted" << std::endl;
-	}
 }
-
-
-

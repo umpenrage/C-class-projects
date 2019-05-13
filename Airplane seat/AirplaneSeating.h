@@ -24,20 +24,27 @@ public:
 	void displayArray(char array1[][12], int size);
 	void fillArray(char array1[][12], int size);
 	void drawHorLeftLine();
-	bool validColumnInput(char columnInput);
-	bool validRowInput(int rowInput);
-	int convertSeatLetter(char columnInput);
-	int approveSeat(char array1[][12],int columnInput, int rowInput, int size, int& passenger);
-	void displayBooking(char array1[][12], int size);
-	void cancelSeat(char array1[][12], int size);
-	int displayOptionMenu();
-	bool verifyDisplayOptionChoice(int input);
-	void storeAllInfo(int row, int column);
 	void storeSeatInfo(std::vector<std::vector<int>>& seat, int row, int column, const int& passenger);
 	void storePassengerName(std::vector<std::string>& name, const int& passenger);
 	void displayPassengerInfor(std::vector<std::string>&name, std::vector<std::vector<int>>& seat, const int& passenger);
-	int getPassengerNum();
-	char returnColumnLetter(std::vector<std::vector<int>> &seat, int row, int column);
+	void displayBooking(char array1[][12], int size);
+	void cancelSeat(char array1[][12], int size);
 	void sortNames(std::vector<std::string> &names, std::vector<std::vector<int>> &seat);
+	void removeEntry(int index, std::vector<std::string>& name, std::vector<std::vector<int>>& seat);
+	void changeToO(char array1[][12], int columnIndex, int rowIndex);
+
+	bool validColumnInput(char columnInput);
+	bool validRowInput(int rowInput);
+	bool verifyDisplayOptionChoice(int input);
+
+	int convertSeatLetter(char columnInput);
+	int approveSeat(char array1[][12],int columnInput, int rowInput, int size, int& passenger);	
+	int displayOptionMenu();
+	int getPassengerNum();
+	int returnIndex(std::vector<std::string> &name);
+	void returnSeatsIndex(int index, int& column, int& row, std::vector<std::vector<int>>& seat);
+
+	char returnColumnLetter(std::vector<std::vector<int>> &seat, int row, int column);
+
 };
 #endif // !
