@@ -234,8 +234,17 @@ int AirPlane::displayOptionMenu()
 	bool loop = true;
 	while (loop) {
 		std::cout << "1. Book Flight\n2. Cancel Flight\n3. Display Booked Seats\n4. Display Passenger Info\n5. Exit Program\nUser Input: ";
-		std::cin >> input;
-		std::cin.ignore();
+		try {
+			std::cin >> input;
+			if (std::cin.fail()) {
+				throw 1;
+			}
+		}
+		catch (int error) {
+				std::cin.clear();//clears the buffer from all input. 
+				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+		}
+
 		loop = verifyDisplayOptionChoice(input);
 		if (loop) {
 			std::cout << "Invalid Choice.\n";

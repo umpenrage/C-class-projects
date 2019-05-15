@@ -32,7 +32,8 @@ public:
 	void sortNames(std::vector<std::string> &names, std::vector<std::vector<int>> &seat);
 	void removeEntry(int index, std::vector<std::string>& name, std::vector<std::vector<int>>& seat);
 	void changeToO(char array1[][12], int columnIndex, int rowIndex);
-
+	void returnSeatsIndex(int index, int& column, int& row, std::vector<std::vector<int>>& seat);
+	
 	bool validColumnInput(char columnInput);
 	bool validRowInput(int rowInput);
 	bool verifyDisplayOptionChoice(int input);
@@ -42,7 +43,7 @@ public:
 	int displayOptionMenu();
 	int getPassengerNum();
 	int returnIndex(std::vector<std::string> &name);
-	void returnSeatsIndex(int index, int& column, int& row, std::vector<std::vector<int>>& seat);
+	
 
 	char returnColumnLetter(std::vector<std::vector<int>> &seat, int row, int column);
 
